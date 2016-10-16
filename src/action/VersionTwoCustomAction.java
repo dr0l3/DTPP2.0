@@ -1,6 +1,6 @@
 package action;
 
-import API.SearchPopupListener;
+import popup.SearchPopupListener;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;

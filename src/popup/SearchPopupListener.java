@@ -1,6 +1,5 @@
-package API;
+package popup;
 
-import action.JumpToTarget;
 import action.VersionTwoCustomAction;
 import com.intellij.openapi.ui.popup.JBPopupListener;
 import com.intellij.openapi.ui.popup.LightweightWindowEvent;

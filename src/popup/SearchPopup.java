@@ -1,4 +1,4 @@
-package API;
+package popup;
 
 import javax.swing.*;
 import java.awt.*;
