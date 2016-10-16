@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by runed on 16-10-2016.
  */
-public class InsertCaret extends VersionTwoCustomAction {
+public class InsertCaretToTargets extends VersionTwoCustomAction {
     @Override
     public void PerformActionAtMarker(Marker2 marker) {
         int offset = marker.getStartOffset();

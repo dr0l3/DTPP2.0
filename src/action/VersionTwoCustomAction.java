@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.awt.RelativePoint;
-import keylisteners.SearchKeyListener;
+import keylistener.SearchKeyListener;
 import marker.Marker2;
 import marker.MarkerPanel2;
 

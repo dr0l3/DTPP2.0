@@ -13,7 +13,11 @@ public class CopyToTarget extends VersionTwoCustomAction {
     public void PerformActionAtMarker(Marker2 marker) {
         int offset = marker.getStartOffset();
         int currentOffset = editor.getCaretModel().getCurrentCaret().getOffset();
-        EditorUtil.performCopy(currentOffset,offset,editor);
+        if(currentOffset < offset){
+            EditorUtil.performCopy(currentOffset,offset,editor);
+        } else{
+            EditorUtil.performCopy(offset,currentOffset, editor);
+        }
         exitAction();
     }
 

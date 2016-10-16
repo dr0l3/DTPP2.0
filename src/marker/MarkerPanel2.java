@@ -13,13 +13,14 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 
-import static offsets.OffsetsFinder.getVisibleTextRange;
+import static util.EditorUtil.getVisibleTextRange;
+
 
 /**
  * Created by runed on 15-10-2016.
  */
 public class MarkerPanel2 extends JComponent{
-    private static final String MARKER_SET = "ALSKDLJQOWIEXCVNMBVZRFTGPÅØÆ";
+    private static final String MARKER_SET = "ASKDLJQOWIEXUHCVNMBZRFTGYPÅØÆ";
     private Editor editor;
     private ArrayList<Marker2> markerCollection;
     private String searchString;
