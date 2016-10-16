@@ -1,0 +1,171 @@
+<!--
+  ~ Copyright 2000-2015 JetBrains s.r.o.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<idea-plugin version="2">
+    <id>com.droletoursInc.productivity.plugin</id>
+    <name>DroleToursProductivityTools</name>
+    <version>1.0</version>
+    <vendor email="runedrolepedersen@gmail.com">DroleTours Inc.</vendor>
+
+    <description><![CDATA[
+      Addon that lets you traverse and edit text much like easymotion<br>
+    ]]>
+    </description>
+
+    <change-notes><![CDATA[
+      Version 1.0 Hurray!<br>
+      ]]>
+    </change-notes>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="131"/>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products -->
+    <!--depends>com.intellij.modules.lang</depends -->
+
+    <!-- please see https://confluence.jetbrains.com/display/JDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellijJmodules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+    <actions>
+        <!-- Add your actions here -->
+        =======
+        <!-- Single Commands -->
+        <action id="jumpToTarget" class="action.JumpToTarget" text="Jump to target"
+                description="">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl j" second-keystroke="ctrl J"/>
+        </action>
+        <action id="insertCaret" class="action.InsertCaret" text="Insert caret(s)"
+                description="test">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl j" second-keystroke="ctrl K"/>
+        </action>
+        <action id="deleteToTarget" class="action.DeleteToTarget" text="Deletes to target"
+                description="test">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl j" second-keystroke="ctrl D"/>
+        </action>
+        <action id="CutToTarget" class="action.CutToTarget" text="Cuts to target"
+                description="test">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl j" second-keystroke="ctrl X"/>
+        </action>
+        <action id="copyToTarget" class="action.CopyToTarget" text="Copies to target"
+                description="test">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl j" second-keystroke="ctrl C"/>
+        </action>
+        <action id="pasteToTarget" class="action.PasteToTarget" text="Paste to target(s)"
+                description="test">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl j" second-keystroke="ctrl V"/>
+        </action>
+
+        <action id="copyBetweenTargets" class="action.CopyBetweenTargets" text="Copies between targets"
+                description="">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H" second-keystroke="ctrl C"/>
+        </action>
+        <action id="deleteBetweenTargets" class="action.DeleteBetweenTargets" text="Deletes between targets"
+                description="">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H" second-keystroke="ctrl D"/>
+        </action>
+        <!--action id="ScrollUp" class="action.ScrollUpCommandAction" text="Scroll up 15 lines"
+                description="Scroll up 15 lines">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt b"/>
+        </action>
+        <action id="ScrollDown" class="action.ScrollDownCommandAction" text="Scroll down 15 lines"
+                description="Scroll down 15 lines">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt n"/>
+        </action>
+        <action id="JumpToTarget" class="action.JumpToTargetAction" text="Jump to the target"
+                description="press the button of the char you want to go to. Then press the letter of the char on the overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl G"/>
+        </action>
+        <action id="InsertCaretAtTarget" class="action.InsertCaretAtTargetAction" text="Insert caret at the target"
+                description="Insert a caret at the destination of the overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl E"/>
+        </action>
+        <action id="SelectFromCurrentToTarget" class="action.SelectCurrentToTargetAction" text="Select from current position to target position"
+                description="Selects the text from the current caret position to the target position defined by the overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl M"/>
+        </action>
+        <action id="DeleteToTarget" class="action.DeleteCurrentToTargetAction" text="Delete to target"
+                description="Delete from the current position to the target position defined by the overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl D"/>
+        </action>
+        <action id="CutToTarget" class="action.CutCurrentToTargetAction" text="Cut to target position"
+                description="Cut the text from the current position to the target position defined by the overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl X"/>
+        </action>
+        <action id="CopyFromCurrentToTarget" class="action.CopyCurrentToTargetAction" text="Copy form current position to target position"
+                description="bla">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl C"/>
+        </action>
+        <action id="PasteToTarget" class="action.PasteToTargetActon" text="Paste clipboard at the targetposition"
+                description="Paste clipboard at the targetposition">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl V"/>
+        </action>
+        <action id="ExitParenthesisEtc" class="action.ExitParanthesisEtcAction"
+                text="Moves the caret outside the current bracket/paranthesis etc"
+                description="Moves the caret outside the current bracket/paranthesis etc">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl J"/>
+        </action>
+        <action id="NewlineAfterTarget" class="action.NewlineAfterTargetAction" text="Create newline after target and go newline"
+                description="Create newline after target and go newline">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl N"/>
+        </action>
+        <action id="CommentLineAtTarget" class="action.CommentLineAtTargetAction" text="Comment line at the target"
+                description="Comment the line at the target">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl J" second-keystroke="ctrl K"/>
+        </action-->
+
+        <!-- Double Commands -->
+        <!--action id="SelectDoubleCommand" class="action.SelectDoubleCommandAction" text="Select a region using two overlays"
+                description="Select from start position chosen using first over to end position chosen using second overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H" second-keystroke="ctrl M"/>
+        </action>
+        <action id="DoubleCommandDelete" class="action.DeleteDoubleCommandAction" text="Delete using two overlays"
+                description="Delete from start position chosen using first over to end position chosen using second overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H" second-keystroke="ctrl D"/>
+        </action>
+        <action id="CutTextDoubleCommand" class="action.CutTextDoubleCommandAction" text="Cut text with double overlay"
+                description="Cut text from start position chosen using first over to end position chosen using second overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H" second-keystroke="ctrl X"/>
+        </action>
+        <action id="InsertDoubleCommand" class="action.PasteDoubleCommandAction" text="insert to current position using two overlays"
+                description="Insert text at the current position from start position chosen using first over to end position chosen using second overlay">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H" second-keystroke="ctrl V"/>
+        </action>
+        <action id="CopyTextDoubleCommand" class="action.CopyTextDoubleCommandAction" text="Copy text double command"
+                description="Copy text using two overlays">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H" second-keystroke="ctrl C"/>
+        </action>
+        <action id="CommentBlockDoubleCommand" class="action.CommentBlockDoubleCommandAction" text="Comment block selected using two overlays"
+                description="Comment block selected using two overlays">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl H" second-keystroke="ctrl K"/>
+        </action-->
+    </actions>
+</idea-plugin>
