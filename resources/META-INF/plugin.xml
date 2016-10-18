@@ -61,7 +61,7 @@
         <!-- Single Commands -->
         <action id="jumpToTarget" class="action.JumpToTarget" text="Jump to target"
                 description="">
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl j" second-keystroke="ctrl J"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl k"/>
         </action>
         <action id="insertCaret" class="action.InsertCaretToTargets" text="Insert caret(s)"
                 description="test">

@@ -18,7 +18,11 @@ public class SearchKeyListener implements KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {
         if(callingAction.isSelecting()){
-            if((e.getKeyChar() == '\n')){
+            /*if((e.getKeyChar() == '\n')){
+                return;
+            }*/
+            if(e.getKeyChar() == KeyEvent.VK_F2 || e.getKeyChar() == KeyEvent.VK_F3){
+                System.out.println("up or down");
                 return;
             }
             System.out.println("Handling select");

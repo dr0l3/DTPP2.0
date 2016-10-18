@@ -1,10 +1,10 @@
 package action;
 
-import popup.SearchPopupListener;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -12,20 +12,21 @@ import com.intellij.ui.awt.RelativePoint;
 import keylistener.SearchKeyListener;
 import marker.Marker2;
 import marker.MarkerPanel2;
+import popup.SearchPopupListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.util.List;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.List;
 
 /**
  * Created by runed on 15-10-2016.
  */
-public abstract class VersionTwoCustomAction extends AnAction{
+public abstract class VersionTwoCustomAction extends AnAction {
     protected JComponent contentComponent;
     protected Editor editor;
     protected KeyListener searchListener;
@@ -58,7 +59,7 @@ public abstract class VersionTwoCustomAction extends AnAction{
     }
 
     protected void setupPopup() {
-        if(popup != null){
+        if (popup != null) {
             popup.removeListener(popupListener);
             popup.cancel();
         }
@@ -71,7 +72,7 @@ public abstract class VersionTwoCustomAction extends AnAction{
         searchTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                if(isSelecting()){
+                if (isSelecting()) {
                     return;
                 }
                 handleSearch();
@@ -79,7 +80,7 @@ public abstract class VersionTwoCustomAction extends AnAction{
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                if(isSelecting()){
+                if (isSelecting()) {
                     return;
                 }
                 handleSearch();
@@ -87,7 +88,7 @@ public abstract class VersionTwoCustomAction extends AnAction{
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                if(isSelecting()){
+                if (isSelecting()) {
                     return;
                 }
                 handleSearch();
@@ -97,10 +98,27 @@ public abstract class VersionTwoCustomAction extends AnAction{
         searchTextField.addKeyListener(searchListener);
 
         searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "setSelecting");
+        searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK), "searchUp");
+        searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.ALT_DOWN_MASK), "searchDown");
         searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK), "performActionAtFirstUp");
         searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK), "performActionAtFirstDown");
         searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK), "performActionAtAll");
 
+        searchTextField.getActionMap().put("searchUp", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                markerPanel.searchFurther(true);
+                System.out.println("Searching up");
+            }
+        });
+
+        searchTextField.getActionMap().put("searchDown", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                markerPanel.searchFurther(false);
+                System.out.println("Searching down");
+            }
+        });
 
         searchTextField.getActionMap().put("setSelecting", new AbstractAction() {
             @Override
@@ -154,24 +172,25 @@ public abstract class VersionTwoCustomAction extends AnAction{
         markerPanel.handleSelectAll();
     }
 
-    public void handleSelectFirstOccurence(boolean upwards){
+    public void handleSelectFirstOccurence(boolean upwards) {
         markerPanel.handleSelectFirstOccurence(upwards);
     }
 
-    public void handleSearch(){
+    public void handleSearch() {
         markerPanel.updateMarkers(searchTextField.getText());
         contentComponent.repaint();
     }
 
-    public void handleSelect(String selectedChar){
+    public void handleSelect(String selectedChar) {
         markerPanel.handleSelect(selectedChar);
     }
 
-    public void exitAction(){
+    public void exitAction() {
+        editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
         markerPanel.updateMarkers("");
         contentComponent.remove(markerPanel);
         contentComponent.repaint();
-        if(!popup.isDisposed()){
+        if (!popup.isDisposed()) {
             popup.cancel();
         }
         this.popup = null;
@@ -182,6 +201,7 @@ public abstract class VersionTwoCustomAction extends AnAction{
     }
 
     protected void setupSecondOverLay(Marker2 marker) {
+        markerPanel.setSelectCharCount(0);
         isSecondOverlay = true;
         offsetFromFirstOverlay = marker.getStartOffset();
         isSelecting = false;

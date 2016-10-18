@@ -14,6 +14,6 @@ public class ScrollUp extends AnAction {
     public void actionPerformed(AnActionEvent anActionEvent) {
         Editor editor = anActionEvent.getData(CommonDataKeys.EDITOR);
         int linesToMove = -15;
-        EditorUtil.performScroll(editor,linesToMove);
+        EditorUtil.performScrollByLinenumber(editor,linesToMove);
     }
 }

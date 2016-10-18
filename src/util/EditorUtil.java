@@ -30,13 +30,18 @@ import java.util.*;
  */
 public class EditorUtil {
 
-    public static void performScroll(Editor editor, int linesToMove){
+    public static void performScrollByLinenumber(Editor editor, int linesToMove){
         VisualPosition pos = editor.getCaretModel().getCurrentCaret().getLogicalPosition().toVisualPosition();
         int linenumber = ((pos.getLine() + linesToMove) > 0) ? (pos.getLine() + linesToMove) : 0;
         int currentcollumn = pos.getColumn();
         LogicalPosition newLogPos = new LogicalPosition(linenumber, currentcollumn);
         editor.getCaretModel().getCurrentCaret().moveToLogicalPosition(newLogPos);
         editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+    }
+
+    public static void performScrollToPosition(Editor editor, int offset){
+        LogicalPosition pos = editor.offsetToLogicalPosition(offset);
+        editor.getScrollingModel().scrollTo(pos, ScrollType.CENTER);
     }
 
     public static void performDelete(int startOffset, int endOffset, Editor editor){
