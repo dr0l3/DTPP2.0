@@ -24,6 +24,7 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.KeyEvent;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Rune on 09-10-2015.
@@ -58,8 +59,9 @@ public class EditorUtil {
         editor.getSelectionModel().setSelection(startOffset, endOffset);
     }
 
+
     public static void performPaste(java.util.List<Integer> offsets, Editor editor, String toBePasted){
-        Runnable runnable = () -> {
+        Runnable pasteRunnable = () -> {
             try {
                 for (Integer offset : offsets) {
                     editor.getDocument().replaceString(offset, offset, toBePasted);
@@ -68,13 +70,25 @@ public class EditorUtil {
                 e.printStackTrace();
             }
         };
-        WriteCommandAction.runWriteCommandAction(editor.getProject(), runnable);
+        WriteCommandAction.runWriteCommandAction(editor.getProject(), pasteRunnable);
     }
 
-    public static void performPasteFromClipboard(java.util.List<Integer> offsets, Editor editor){
+    public static void performPaste(int offset, Editor editor, String toBePasted){
+        Runnable pasteRunnable = () -> {
+            editor.getDocument().replaceString(offset, offset, toBePasted);
+        };
+        WriteCommandAction.runWriteCommandAction(editor.getProject(), pasteRunnable);
+    }
+
+    public static void performPasteFromClipboard(int offset, Editor editor){
+        String stringToPasted = extractCopiedStringFromClipboard();
+        performPaste(offset, editor, stringToPasted);
+    }
+
+    public static String extractCopiedStringFromClipboard(){
         CopyPasteManager cpmanager = CopyPasteManager.getInstance();
         if(cpmanager.getContents()== null ) {
-            return;
+            return "";
         }
         DataFlavor[] dataFlavor = cpmanager.getContents().getTransferDataFlavors();
         Object toBePasted = (cpmanager.getContents(dataFlavor[0]));
@@ -83,7 +97,13 @@ public class EditorUtil {
             stringToPasted = (String)toBePasted;
         } else {
             stringToPasted = String.valueOf(toBePasted);
+
         }
+        return stringToPasted;
+    }
+
+    public static void performPasteFromClipboard(java.util.List<Integer> offsets, Editor editor){
+        String stringToPasted = extractCopiedStringFromClipboard();
         performPaste(offsets, editor, stringToPasted);
     }
 
@@ -96,6 +116,21 @@ public class EditorUtil {
         performMark(startOffset,endOffset,editor);
         editor.getSelectionModel().copySelectionToClipboard();
         editor.getSelectionModel().removeSelection();
+    }
+
+    public static void performMove(int offset, Editor editor){
+        editor.getCaretModel().moveToOffset(offset);
+    }
+
+    public static void performInsertCaret(int offset, Editor editor){
+        editor.getCaretModel().addCaret(editor.offsetToVisualPosition(offset));
+    }
+
+    public static void performInsertCarets(List<Integer> offsets, Editor editor){
+        for (Integer offset :
+                offsets) {
+            performInsertCaret(offset, editor);
+        }
     }
 
     public static boolean isPrintableChar(char c) {
@@ -118,5 +153,9 @@ public class EditorUtil {
         LogicalPosition endLogicalPosition = editor.xyToLogicalPosition(new Point(endVisualX.intValue(), endVisualY.intValue()));
 
         return new TextRange(editor.logicalPositionToOffset(startLogicalPosition), editor.logicalPositionToOffset(endLogicalPosition));
+    }
+
+    public static void performCut(Object o, Object o1, Object o2) {
+
     }
 }

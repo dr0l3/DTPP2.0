@@ -10,14 +10,12 @@ import java.util.List;
 public class JumpToTarget extends VersionTwoCustomAction {
 
     @Override
-    public void PerformActionAtMarker(Marker2 marker) {
-        int offset = marker.getStartOffset();
-        editor.getCaretModel().moveToOffset(offset);
-        exitAction();
+    public void initiateActionAtMarker(Marker2 marker) {
+        findOffsetsAndPerformAction(util.EditorUtil::performMove,marker);
     }
 
     @Override
-    public void PerformActionAtMultipleMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers) {
         return;
     }
 }

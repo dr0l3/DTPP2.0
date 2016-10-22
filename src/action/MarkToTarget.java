@@ -10,19 +10,12 @@ import java.util.List;
  */
 public class MarkToTarget extends VersionTwoCustomAction {
     @Override
-    public void PerformActionAtMarker(Marker2 marker) {
-        int offset = marker.getStartOffset();
-        int currentOffset = editor.getCaretModel().getCurrentCaret().getOffset();
-        if(offset < currentOffset){
-            EditorUtil.performMark(offset,currentOffset,editor);
-        } else {
-            EditorUtil.performMark(currentOffset,offset,editor);
-        }
-        exitAction();
+    public void initiateActionAtMarker(Marker2 marker) {
+        findOffsetsAndPerformAction(EditorUtil::performMark,marker);
     }
 
     @Override
-    public void PerformActionAtMultipleMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers) {
 
     }
 }

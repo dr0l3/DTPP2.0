@@ -13,18 +13,11 @@ import java.util.List;
  */
 public class DeleteToTarget extends VersionTwoCustomAction {
     @Override
-    public void PerformActionAtMarker(Marker2 marker) {
-        int offset = marker.getStartOffset();
-        int currentOffset = editor.getCaretModel().getCurrentCaret().getOffset();
-        if(currentOffset < offset){
-            EditorUtil.performDelete(currentOffset,offset,editor);
-        } else{
-            EditorUtil.performDelete(offset,currentOffset, editor);
-        }
-        exitAction();
+    public void initiateActionAtMarker(Marker2 marker) {
+        findOffsetsAndPerformAction(EditorUtil::performDelete,marker);
     }
 
     @Override
-    public void PerformActionAtMultipleMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers) {
     }
 }
