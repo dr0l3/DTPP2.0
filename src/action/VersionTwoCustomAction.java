@@ -13,6 +13,8 @@ import keylistener.SearchKeyListener;
 import marker.Marker2;
 import marker.MarkerPanel2;
 import popup.SearchPopupListener;
+import util.OneOffsetEditorAction;
+import util.TwoOffsetEditorAction;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -45,7 +47,6 @@ public abstract class VersionTwoCustomAction extends AnAction {
         editor = anActionEvent.getData(CommonDataKeys.EDITOR);
         if (editor == null || project == null) {
             return;
-
         }
         contentComponent = editor.getContentComponent();
         searchListener = new SearchKeyListener(this);
@@ -209,7 +210,31 @@ public abstract class VersionTwoCustomAction extends AnAction {
         handleSearch();
     }
 
-    public abstract void PerformActionAtMarker(Marker2 marker);
+    public abstract void initiateActionAtMarker(Marker2 marker);
 
-    public abstract void PerformActionAtMultipleMarkers(List<Marker2> markers);
+    public abstract void initiateActionAtMarkers(List<Marker2> markers);
+
+    public void findOffsetsAndPerformAction(TwoOffsetEditorAction toBePerformed, Marker2 marker){
+        int offset = marker.getStartOffset();
+        int currentOffset;
+        if(isSecondOverlay){
+            currentOffset = offsetFromFirstOverlay;
+        } else {
+            currentOffset = editor.getCaretModel().getCurrentCaret().getOffset();
+        }
+        if(currentOffset < offset){
+            toBePerformed.performAction(currentOffset,offset,editor);
+        } else{
+            toBePerformed.performAction(offset,currentOffset, editor);
+        }
+        //TODO: should not be part of this method
+        exitAction();
+    }
+
+    public void findSingleOffsetAndPerformAction(OneOffsetEditorAction toBePerformed, Marker2 marker){
+        int offset = marker.getStartOffset();
+        toBePerformed.performAction(offset,editor);
+        //TODO: should not be part of this method
+        exitAction();
+    }
 }

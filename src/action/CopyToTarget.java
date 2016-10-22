@@ -10,19 +10,12 @@ import java.util.List;
  */
 public class CopyToTarget extends VersionTwoCustomAction {
     @Override
-    public void PerformActionAtMarker(Marker2 marker) {
-        int offset = marker.getStartOffset();
-        int currentOffset = editor.getCaretModel().getCurrentCaret().getOffset();
-        if(currentOffset < offset){
-            EditorUtil.performCopy(currentOffset,offset,editor);
-        } else{
-            EditorUtil.performCopy(offset,currentOffset, editor);
-        }
-        exitAction();
+    public void initiateActionAtMarker(Marker2 marker) {
+        findOffsetsAndPerformAction(EditorUtil::performCopy,marker);
     }
 
     @Override
-    public void PerformActionAtMultipleMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers) {
 
     }
 }

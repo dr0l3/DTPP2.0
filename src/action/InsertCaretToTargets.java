@@ -2,6 +2,7 @@ package action;
 
 import com.intellij.openapi.editor.Caret;
 import marker.Marker2;
+import util.EditorUtil;
 
 import java.util.List;
 
@@ -10,14 +11,12 @@ import java.util.List;
  */
 public class InsertCaretToTargets extends VersionTwoCustomAction {
     @Override
-    public void PerformActionAtMarker(Marker2 marker) {
-        int offset = marker.getStartOffset();
-        editor.getCaretModel().addCaret(editor.offsetToVisualPosition(offset));
-        exitAction();
+    public void initiateActionAtMarker(Marker2 marker) {
+        findSingleOffsetAndPerformAction(EditorUtil::performInsertCaret, marker);
     }
 
     @Override
-    public void PerformActionAtMultipleMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers) {
         Caret currentCaret = editor.getCaretModel().getCurrentCaret();
         markers.forEach(marker -> editor.getCaretModel().addCaret(editor.offsetToVisualPosition(marker.getStartOffset())));
         editor.getCaretModel().removeCaret(currentCaret);

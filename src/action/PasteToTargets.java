@@ -13,19 +13,14 @@ import java.util.stream.Collectors;
  */
 public class PasteToTargets extends VersionTwoCustomAction {
     @Override
-    public void PerformActionAtMarker(Marker2 marker) {
-        int offset = marker.getStartOffset();
-        EditorUtil.performPasteFromClipboard(Arrays.asList(offset), editor);
-        exitAction();
+    public void initiateActionAtMarker(Marker2 marker) {
+        findSingleOffsetAndPerformAction(EditorUtil::performPasteFromClipboard, marker);
     }
 
     @Override
-    public void PerformActionAtMultipleMarkers(List<Marker2> markers) {
-        Document document = editor.getDocument();
+    public void initiateActionAtMarkers(List<Marker2> markers) {
         List<Integer> offsets = markers.stream().map(Marker2::getStartOffset).collect(Collectors.toList());
         EditorUtil.performPasteFromClipboard(offsets, editor);
         exitAction();
     }
-
-
 }

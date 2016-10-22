@@ -72,7 +72,6 @@ public class MarkerPanel2 extends JComponent{
     }
 
     private void scrollToMarkerCollection() {
-
         //do we go up or down?
         long markersDownwards = markerCollection.stream()
                 .filter(marker2 -> marker2.getStartOffset() > contextPoint)
@@ -84,11 +83,7 @@ public class MarkerPanel2 extends JComponent{
             System.out.println("Scrolling to markerlocation downwards");
             offset = markerCollection.stream()
                     .filter(marker2 -> marker2.getStartOffset() > contextPoint)
-                    .sorted((o1, o2) -> {
-                        int o1ToCaret = Math.abs(o1.getStartOffset() - this.contextPoint);
-                        int o2ToCaret = Math.abs(o2.getStartOffset() - this.contextPoint);
-                        return o1ToCaret - o2ToCaret;
-                    })
+                    .sorted(new MarkerComparator(this.contextPoint))
                     .findFirst().get().getStartOffset();
             EditorUtil.performScrollToPosition(editor, offset);
             setContextPoint(offset);
@@ -96,16 +91,13 @@ public class MarkerPanel2 extends JComponent{
             System.out.println("Scrolling to markerlocation upwards");
             offset = markerCollection.stream()
                     .filter(marker2 -> marker2.getStartOffset() < contextPoint)
-                    .sorted((o1, o2) -> {
-                        int o1ToCaret = Math.abs(o1.getStartOffset() - this.contextPoint);
-                        int o2ToCaret = Math.abs(o2.getStartOffset() - this.contextPoint);
-                        return o1ToCaret - o2ToCaret;
-                    })
+                    .sorted(new MarkerComparator(this.contextPoint))
                     .findFirst().get().getStartOffset();
             EditorUtil.performScrollToPosition(editor, offset);
             setContextPoint(offset);
         }
     }
+
 
     private void SortMarkersAndAssignReplacementText() {
         this.markerCollection.sort((o1, o2) -> {
@@ -227,14 +219,10 @@ public class MarkerPanel2 extends JComponent{
     public void handleSelectFirstOccurence(boolean upwards){
         Optional<Marker2> goTomarker = markerCollection.stream()
                 .filter(marker2 -> marker2.getStartOffset() < this.contextPoint ==  upwards)
-                .sorted((o1, o2) -> {
-                    int o1ToCaret = Math.abs(o1.getStartOffset() - this.contextPoint);
-                    int o2ToCaret = Math.abs(o2.getStartOffset() - this.contextPoint);
-                    return o1ToCaret - o2ToCaret;
-                })
+                .sorted(new MarkerComparator(this.contextPoint))
                 .findFirst();
         if(goTomarker.isPresent()) {
-            callingAction.PerformActionAtMarker(goTomarker.get());
+            callingAction.initiateActionAtMarker(goTomarker.get());
         }
     }
 
@@ -250,7 +238,7 @@ public class MarkerPanel2 extends JComponent{
                 .filter(marker2 -> marker2.getReplacementText().toLowerCase().equals(selectedChar))
                 .findFirst();
         if(marker.isPresent()) {
-            callingAction.PerformActionAtMarker(marker.get());
+            callingAction.initiateActionAtMarker(marker.get());
         }
     }
 
@@ -284,7 +272,7 @@ public class MarkerPanel2 extends JComponent{
     }
 
     public void handleSelectAll() {
-        callingAction.PerformActionAtMultipleMarkers(markerCollection);
+        callingAction.initiateActionAtMarkers(markerCollection);
     }
 
     public int getContextPoint() {
@@ -308,11 +296,7 @@ public class MarkerPanel2 extends JComponent{
         //scroll to some position
         Optional<Marker2> contextMarker = this.markerCollection.stream()
                 .filter(marker2 -> !marker2.isVisible(editor) && marker2.getStartOffset() < contextPoint == up)
-                .sorted((o1, o2) -> {
-                    int o1ToCaret = Math.abs(o1.getStartOffset() - this.contextPoint);
-                    int o2ToCaret = Math.abs(o2.getStartOffset() - this.contextPoint);
-                    return o1ToCaret - o2ToCaret;
-                })
+                .sorted(new MarkerComparator(this.contextPoint))
                 .findFirst();
         if(!contextMarker.isPresent()){
             return;

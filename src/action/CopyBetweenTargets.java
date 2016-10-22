@@ -10,22 +10,15 @@ import java.util.List;
  */
 public class CopyBetweenTargets extends VersionTwoCustomAction {
     @Override
-    public void PerformActionAtMarker(Marker2 marker) {
+    public void initiateActionAtMarker(Marker2 marker) {
         if(isSecondOverlay){
-            int offset = marker.getStartOffset();
-            int currentOffset = offsetFromFirstOverlay;
-            if(currentOffset < offset){
-                EditorUtil.performCopy(currentOffset,offset,editor);
-            } else{
-                EditorUtil.performCopy(offset,currentOffset, editor);
-            }
-            exitAction();
+            findOffsetsAndPerformAction(EditorUtil::performCopy, marker);
             return;
         }
         setupSecondOverLay(marker);
     }
 
     @Override
-    public void PerformActionAtMultipleMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers) {
     }
 }

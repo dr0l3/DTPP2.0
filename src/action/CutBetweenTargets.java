@@ -12,22 +12,15 @@ import java.util.List;
  */
 public class CutBetweenTargets extends VersionTwoCustomAction {
     @Override
-    public void PerformActionAtMarker(Marker2 marker) {
+    public void initiateActionAtMarker(Marker2 marker) {
         if(isSecondOverlay){
-            int offset = marker.getStartOffset();
-            int currentOffset = offsetFromFirstOverlay;
-            if(offset < currentOffset){
-                EditorUtil.performCut(offset,currentOffset,editor);
-            } else {
-                EditorUtil.performCut(currentOffset,offset,editor);
-            }
-            exitAction();
+            findOffsetsAndPerformAction(EditorUtil::performCut, marker);
             return;
         }
         setupSecondOverLay(marker);
     }
 
     @Override
-    public void PerformActionAtMultipleMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers) {
     }
 }
