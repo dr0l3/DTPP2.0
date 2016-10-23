@@ -91,7 +91,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
         return popup;
     }
 
-    private void calculatePositionAndShowPopup(JBPopup popup, JComponent contentComponent){
+    private void calculatePositionAndShowPopup(JBPopup popup, JComponent contentComponent) {
         RelativePoint popupLocation = JBPopupFactory.getInstance().guessBestPopupLocation(contentComponent);
         popup.show(popupLocation);
     }
@@ -238,21 +238,26 @@ public abstract class VersionTwoCustomAction extends AnAction {
 
     public abstract void initiateActionAtMarkers(List<Marker2> markers);
 
-    public void findOffsetsAndPerformAction(TwoOffsetEditorAction toBePerformed, Marker2 marker){
+    public void findOffsetsAndPerformAction(TwoOffsetEditorAction toBePerformed, Marker2 marker) {
         int offset = marker.getStartOffset();
-        int currentOffset = editor.getCaretModel().getCurrentCaret().getOffset();
-        if(currentOffset < offset){
-            toBePerformed.performAction(currentOffset,offset,editor);
-        } else{
-            toBePerformed.performAction(offset,currentOffset, editor);
+        int currentOffset;
+        if (isSecondOverlay) {
+            currentOffset = offsetFromFirstOverlay;
+        } else {
+            currentOffset = editor.getCaretModel().getCurrentCaret().getOffset();
+        }
+        if (currentOffset < offset) {
+            toBePerformed.performAction(currentOffset, offset, editor);
+        } else {
+            toBePerformed.performAction(offset, currentOffset, editor);
         }
         //TODO: should not be part of this method
         exitAction();
     }
 
-    public void findSingleOffsetAndPerformAction(OneOffsetEditorAction toBePerformed, Marker2 marker){
+    public void findSingleOffsetAndPerformAction(OneOffsetEditorAction toBePerformed, Marker2 marker) {
         int offset = marker.getStartOffset();
-        toBePerformed.performAction(offset,editor);
+        toBePerformed.performAction(offset, editor);
         //TODO: should not be part of this method
         exitAction();
     }

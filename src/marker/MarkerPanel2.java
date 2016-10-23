@@ -48,6 +48,7 @@ public class MarkerPanel2 extends JComponent{
     public void updateMarkers(String searchString){
         String oldSearchString = this.searchString;
         if(oldSearchString.equals(searchString)){ //performance: dont rerun on same input
+            System.out.println("Aborting paint, old = new search string");
             return;
         }
 
@@ -158,7 +159,7 @@ public class MarkerPanel2 extends JComponent{
 
     @Override
     public void paint(Graphics g){
-        //System.out.println("painting");
+        System.out.println("painting");
         g.setFont(fontIneditor);
         MarkupModel markupModel = editor.getMarkupModel();
         markupModel.removeAllHighlighters();
