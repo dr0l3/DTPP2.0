@@ -12,7 +12,7 @@ import java.util.List;
 public class InsertCaretToTargets extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
-        findOffsetsAndPerformAction(EditorUtil::performInsertCaret, marker);
+        findSingleOffsetAndPerformAction(EditorUtil::performInsertCaret, marker);
     }
 
     @Override

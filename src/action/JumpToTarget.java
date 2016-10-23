@@ -11,7 +11,7 @@ public class JumpToTarget extends VersionTwoCustomAction {
 
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
-        findOffsetsAndPerformAction(util.EditorUtil::performMove,marker);
+        findSingleOffsetAndPerformAction(util.EditorUtil::performMove,marker);
     }
 
     @Override

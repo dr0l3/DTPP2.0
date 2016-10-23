@@ -29,6 +29,12 @@ import java.util.List;
  * Created by runed on 15-10-2016.
  */
 public abstract class VersionTwoCustomAction extends AnAction {
+    private static final String SET_SELECTING = "setSelecting";
+    private static final String SEARCH_UP = "searchUp";
+    private static final String SEARCH_DOWN = "searchDown";
+    private static final String PERFORM_ACTION_AT_FIRST_UP = "performActionAtFirstUp";
+    private static final String PERFORM_ACTION_AT_FIRST_DOWN = "performActionAtFirstDown";
+    private static final String PERFORM_ACTION_AT_ALL = "performActionAtAll";
     protected JComponent contentComponent;
     protected Editor editor;
     protected KeyListener searchListener;
@@ -49,28 +55,53 @@ public abstract class VersionTwoCustomAction extends AnAction {
             return;
         }
         contentComponent = editor.getContentComponent();
-        searchListener = new SearchKeyListener(this);
-
         markerPanel = new MarkerPanel2(editor, this, editor.getCaretModel().getCurrentCaret().getOffset());
         contentComponent.add(markerPanel);
         isSelecting = false;
         isSecondOverlay = false;
+        searchListener = new SearchKeyListener(this);
+        searchTextField = setupSearchTextField(searchListener);
+        popupListener = new SearchPopupListener(this);
+        JPanel panel = new JPanel(new BorderLayout());
 
-        setupPopup();
+        removeExistingPopup();
+        popup = setupPopupAndBindActionListeners(searchTextField, popupListener, panel);
+        calculatePositionAndShowPopup(popup, contentComponent);
+        searchTextField.requestFocus();
     }
 
-    protected void setupPopup() {
+    private void removeExistingPopup() {
         if (popup != null) {
             popup.removeListener(popupListener);
             popup.cancel();
         }
-        RelativePoint popupLocation = JBPopupFactory.getInstance().guessBestPopupLocation(contentComponent);
+    }
 
-        JPanel panel = new JPanel(new BorderLayout());
-        searchTextField = new JTextField();
-        searchTextField.setText("");
-        searchTextField.setColumns(10);
-        searchTextField.getDocument().addDocumentListener(new DocumentListener() {
+    private JBPopup setupPopupAndBindActionListeners(JTextField searchTextField, SearchPopupListener listener, JPanel panel) {
+        JBPopup popup;
+        panel.add(searchTextField, BorderLayout.WEST);
+
+        popup = JBPopupFactory.getInstance()
+                .createComponentPopupBuilder(panel, panel)
+                .addListener(listener)
+                .setFocusable(true)
+                .setMovable(false)
+                .setShowBorder(true)
+                .createPopup();
+        return popup;
+    }
+
+    private void calculatePositionAndShowPopup(JBPopup popup, JComponent contentComponent){
+        RelativePoint popupLocation = JBPopupFactory.getInstance().guessBestPopupLocation(contentComponent);
+        popup.show(popupLocation);
+    }
+
+    private JTextField setupSearchTextField(KeyListener searchListener) {
+        JTextField textField = new JTextField();
+        textField.addKeyListener(searchListener);
+        textField.setText("");
+        textField.setColumns(10);
+        textField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 if (isSelecting()) {
@@ -95,17 +126,15 @@ public abstract class VersionTwoCustomAction extends AnAction {
                 handleSearch();
             }
         });
-        panel.add(searchTextField, BorderLayout.WEST);
-        searchTextField.addKeyListener(searchListener);
 
-        searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "setSelecting");
-        searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK), "searchUp");
-        searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.ALT_DOWN_MASK), "searchDown");
-        searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK), "performActionAtFirstUp");
-        searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK), "performActionAtFirstDown");
-        searchTextField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK), "performActionAtAll");
+        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SET_SELECTING);
+        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK), SEARCH_UP);
+        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.ALT_DOWN_MASK), SEARCH_DOWN);
+        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK), PERFORM_ACTION_AT_FIRST_UP);
+        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK), PERFORM_ACTION_AT_FIRST_DOWN);
+        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK), PERFORM_ACTION_AT_ALL);
 
-        searchTextField.getActionMap().put("searchUp", new AbstractAction() {
+        textField.getActionMap().put(SEARCH_UP, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 markerPanel.searchFurther(true);
@@ -113,7 +142,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
             }
         });
 
-        searchTextField.getActionMap().put("searchDown", new AbstractAction() {
+        textField.getActionMap().put(SEARCH_DOWN, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 markerPanel.searchFurther(false);
@@ -121,7 +150,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
             }
         });
 
-        searchTextField.getActionMap().put("setSelecting", new AbstractAction() {
+        textField.getActionMap().put(SET_SELECTING, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 isSelecting = true;
@@ -130,7 +159,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
             }
         });
 
-        searchTextField.getActionMap().put("performActionAtFirstUp", new AbstractAction() {
+        textField.getActionMap().put(PERFORM_ACTION_AT_FIRST_UP, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("going to first occurence up");
@@ -138,7 +167,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
             }
         });
 
-        searchTextField.getActionMap().put("performActionAtFirstDown", new AbstractAction() {
+        textField.getActionMap().put(PERFORM_ACTION_AT_FIRST_DOWN, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("going to first occurence down");
@@ -146,7 +175,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
             }
         });
 
-        searchTextField.getActionMap().put("performActionAtAll", new AbstractAction() {
+        textField.getActionMap().put(PERFORM_ACTION_AT_ALL, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("doing all the things");
@@ -154,22 +183,10 @@ public abstract class VersionTwoCustomAction extends AnAction {
             }
         });
 
-        popupListener = new SearchPopupListener(this);
-
-        popup = JBPopupFactory.getInstance()
-                .createComponentPopupBuilder(panel, panel)
-                .addListener(popupListener)
-                .setFocusable(true)
-                .setMovable(false)
-                .setShowBorder(true)
-                .createPopup();
-
-        popup.show(popupLocation);
-
-        searchTextField.requestFocus();
+        return textField;
     }
 
-    private void handleSelectAll() {
+    public void handleSelectAll() {
         markerPanel.handleSelectAll();
     }
 
@@ -206,7 +223,14 @@ public abstract class VersionTwoCustomAction extends AnAction {
         isSecondOverlay = true;
         offsetFromFirstOverlay = marker.getStartOffset();
         isSelecting = false;
-        setupPopup();
+        searchListener = new SearchKeyListener(this);
+        searchTextField = setupSearchTextField(searchListener);
+        popupListener = new SearchPopupListener(this);
+        JPanel panel = new JPanel(new BorderLayout());
+        removeExistingPopup();
+        popup = setupPopupAndBindActionListeners(searchTextField, popupListener, panel);
+        calculatePositionAndShowPopup(popup, contentComponent);
+        searchTextField.requestFocus();
         handleSearch();
     }
 
@@ -226,7 +250,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
         exitAction();
     }
 
-    public void findOffsetsAndPerformAction(OneOffsetEditorAction toBePerformed, Marker2 marker){
+    public void findSingleOffsetAndPerformAction(OneOffsetEditorAction toBePerformed, Marker2 marker){
         int offset = marker.getStartOffset();
         toBePerformed.performAction(offset,editor);
         //TODO: should not be part of this method

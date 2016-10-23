@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class PasteToTargets extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
-        findOffsetsAndPerformAction(EditorUtil::performPasteFromClipboard, marker);
+        findSingleOffsetAndPerformAction(EditorUtil::performPasteFromClipboard, marker);
     }
 
     @Override
