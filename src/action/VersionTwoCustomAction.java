@@ -223,11 +223,12 @@ public abstract class VersionTwoCustomAction extends AnAction {
         isSecondOverlay = true;
         offsetFromFirstOverlay = marker.getStartOffset();
         isSelecting = false;
+        removeExistingPopup();
         searchListener = new SearchKeyListener(this);
         searchTextField = setupSearchTextField(searchListener);
         popupListener = new SearchPopupListener(this);
         JPanel panel = new JPanel(new BorderLayout());
-        removeExistingPopup();
+
         popup = setupPopupAndBindActionListeners(searchTextField, popupListener, panel);
         calculatePositionAndShowPopup(popup, contentComponent);
         searchTextField.requestFocus();
