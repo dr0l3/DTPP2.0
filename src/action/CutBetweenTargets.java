@@ -15,6 +15,7 @@ public class CutBetweenTargets extends VersionTwoCustomAction {
     public void initiateActionAtMarker(Marker2 marker) {
         if(isSecondOverlay){
             findOffsetsAndPerformAction(EditorUtil::performCut, marker);
+            exitAction();
             return;
         }
         setupSecondOverLay(marker);

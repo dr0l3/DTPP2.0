@@ -12,6 +12,7 @@ public class MarkToTarget extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
         findOffsetsAndPerformAction(EditorUtil::performMark,marker);
+        exitAction();
     }
 
     @Override

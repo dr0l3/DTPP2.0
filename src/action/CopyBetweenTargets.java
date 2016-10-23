@@ -13,6 +13,7 @@ public class CopyBetweenTargets extends VersionTwoCustomAction {
     public void initiateActionAtMarker(Marker2 marker) {
         if(isSecondOverlay){
             findOffsetsAndPerformAction(EditorUtil::performCopy, marker);
+            exitAction();
             return;
         }
         setupSecondOverLay(marker);

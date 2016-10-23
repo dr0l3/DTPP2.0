@@ -64,13 +64,13 @@ public abstract class VersionTwoCustomAction extends AnAction {
         popupListener = new SearchPopupListener(this);
         JPanel panel = new JPanel(new BorderLayout());
 
-        removeExistingPopup();
+        decommissionPopup(popup);
         popup = setupPopupAndBindActionListeners(searchTextField, popupListener, panel);
         calculatePositionAndShowPopup(popup, contentComponent);
         searchTextField.requestFocus();
     }
 
-    private void removeExistingPopup() {
+    private void decommissionPopup(JBPopup popup) {
         if (popup != null) {
             popup.removeListener(popupListener);
             popup.cancel();
@@ -223,7 +223,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
         isSecondOverlay = true;
         offsetFromFirstOverlay = marker.getStartOffset();
         isSelecting = false;
-        removeExistingPopup();
+        decommissionPopup(popup);
         searchListener = new SearchKeyListener(this);
         searchTextField = setupSearchTextField(searchListener);
         popupListener = new SearchPopupListener(this);
@@ -252,14 +252,11 @@ public abstract class VersionTwoCustomAction extends AnAction {
         } else {
             toBePerformed.performAction(offset, currentOffset, editor);
         }
-        //TODO: should not be part of this method
-        exitAction();
     }
 
     public void findSingleOffsetAndPerformAction(OneOffsetEditorAction toBePerformed, Marker2 marker) {
         int offset = marker.getStartOffset();
         toBePerformed.performAction(offset, editor);
-        //TODO: should not be part of this method
-        exitAction();
     }
+
 }

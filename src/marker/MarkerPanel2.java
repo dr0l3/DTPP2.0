@@ -1,6 +1,7 @@
 package marker;
 
 import action.VersionTwoCustomAction;
+import com.intellij.openapi.editor.Caret;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.EditorFontType;
@@ -13,6 +14,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static util.EditorUtil.getVisibleTextRange;
 
@@ -123,7 +128,10 @@ public class MarkerPanel2 extends JComponent{
     private ArrayList<Marker2> getMatchesForStringInTextRange(String typedChar, TextRange textRange, Document document) {
         ArrayList<Marker2> markers = new ArrayList<>();
         int startOffset = textRange.getStartOffset();
-        int currentCaretOffset = editor.getCaretModel().getCurrentCaret().getOffset();
+        List<Integer> currentCaretOffsets = editor.getCaretModel().getAllCarets()
+                .stream()
+                .map(Caret::getOffset)
+                .collect(Collectors.toList());
         String visibleText = document.getText(textRange).toLowerCase();
         visibleText = visibleText.replace("\n", " ");
         visibleText = visibleText.replace("\r", " ");
@@ -136,7 +144,7 @@ public class MarkerPanel2 extends JComponent{
             }
             int offset = startOffset + index;
             //exclude current caret position
-            if(offset == currentCaretOffset){
+            if(currentCaretOffsets.contains(offset)){
                 continue;
             }
             //exclude multiple spaces in a row
@@ -318,5 +326,9 @@ public class MarkerPanel2 extends JComponent{
 
     public void setSelectCharCount(int selectCharCount) {
         this.selectCharCount = selectCharCount;
+    }
+
+    public void removeMarkers(Collection<Marker2> markers){
+        this.markerCollection.removeAll(markers);
     }
 }

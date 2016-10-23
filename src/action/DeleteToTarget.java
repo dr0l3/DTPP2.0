@@ -15,6 +15,7 @@ public class DeleteToTarget extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
         findOffsetsAndPerformAction(EditorUtil::performDelete,marker);
+        exitAction();
     }
 
     @Override

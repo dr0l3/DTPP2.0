@@ -12,6 +12,7 @@ public class CutToTarget extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
         findOffsetsAndPerformAction(EditorUtil::performCut,marker);
+        exitAction();
     }
 
     @Override

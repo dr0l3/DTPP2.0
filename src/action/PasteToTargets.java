@@ -15,6 +15,7 @@ public class PasteToTargets extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
         findSingleOffsetAndPerformAction(EditorUtil::performPasteFromClipboard, marker);
+        exitAction();
     }
 
     @Override

@@ -13,6 +13,7 @@ public class InsertCaretToTargets extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
         findSingleOffsetAndPerformAction(EditorUtil::performInsertCaret, marker);
+        exitAction();
     }
 
     @Override

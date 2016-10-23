@@ -12,6 +12,7 @@ public class CopyToTarget extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker) {
         findOffsetsAndPerformAction(EditorUtil::performCopy,marker);
+        exitAction();
     }
 
     @Override

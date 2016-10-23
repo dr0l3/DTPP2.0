@@ -13,6 +13,7 @@ public class MarkBetweenTargets extends VersionTwoCustomAction {
     public void initiateActionAtMarker(Marker2 marker) {
         if(isSecondOverlay){
             findOffsetsAndPerformAction(EditorUtil::performMark, marker);
+            exitAction();
             return;
         }
         setupSecondOverLay(marker);
