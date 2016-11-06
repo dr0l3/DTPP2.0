@@ -12,7 +12,6 @@ import marker.MarkerPanel2;
 public class SearchPopupListener implements JBPopupListener {
     private VersionTwoCustomAction callingAction;
     private Editor editor;
-    private MarkerPanel2 markerPanel;
 
     public SearchPopupListener(VersionTwoCustomAction callingAction, Editor editor) {
         this.callingAction = callingAction;

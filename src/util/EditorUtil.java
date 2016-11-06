@@ -128,12 +128,20 @@ public class EditorUtil {
         editor.getCaretModel().addCaret(editor.offsetToVisualPosition(offset));
     }
 
+    public static void performMarkRange(int startOffset, int endOffset, Editor editor){
+        MarkupModel markupModel = editor.getMarkupModel();
+        TextAttributes attributes = new TextAttributes();
+        attributes.setEffectType(EffectType.SEARCH_MATCH);
+        attributes.setBackgroundColor(JBColor.CYAN);
+        markupModel.addRangeHighlighter(startOffset, endOffset, HighlighterLayer.SELECTION, attributes, HighlighterTargetArea.EXACT_RANGE);
+    }
+
     public static void performMarkSingleCharacter(int offset, Editor editor){
         MarkupModel markupModel = editor.getMarkupModel();
         TextAttributes attributes = new TextAttributes();
         attributes.setEffectType(EffectType.SEARCH_MATCH);
         attributes.setBackgroundColor(JBColor.CYAN);
-        markupModel.addRangeHighlighter(offset, offset+1, HighlighterLayer.SELECTION, attributes, HighlighterTargetArea.EXACT_RANGE);
+        markupModel.addRangeHighlighter(offset, offset+3, HighlighterLayer.SELECTION, attributes, HighlighterTargetArea.EXACT_RANGE);
     }
 
     public static void performInsertCarets(List<Integer> offsets, Editor editor){

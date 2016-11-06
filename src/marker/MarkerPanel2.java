@@ -16,8 +16,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static util.EditorUtil.getVisibleTextRange;
 
@@ -169,11 +167,14 @@ public class MarkerPanel2 extends JComponent{
     public void paint(Graphics g){
 //        System.out.println("painting");
         g.setFont(fontIneditor);
-        MarkupModel markupModel = editor.getMarkupModel();
-        markupModel.removeAllHighlighters();
         for (Marker2 marker : markerCollection){
-            drawBackgroundOfMarker(g, marker);
-            drawMarkerChar(g,marker);
+            if(marker.isSelectionMaker()){
+                EditorUtil.performMarkRange(marker.getStartOffset(), marker.getEndOffset(), editor);
+                System.out.println("Painting selection marker");
+            } else {
+                drawBackgroundOfMarker(g, marker);
+                drawMarkerChar(g, marker);
+            }
         }
     }
 
@@ -330,5 +331,9 @@ public class MarkerPanel2 extends JComponent{
 
     public void removeMarkers(Collection<Marker2> markers){
         this.markerCollection.removeAll(markers);
+    }
+
+    public void addMarkers(Collection<Marker2> markers){
+        this.markerCollection.addAll(markers);
     }
 }

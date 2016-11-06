@@ -1,10 +1,14 @@
 package action;
 
 import com.intellij.openapi.editor.Editor;
+import keylistener.OneOffsetOneOverlayAcceptListener;
+import keylistener.TwoOffsetOneOverlayAcceptListener;
 import marker.Marker2;
 import marker.MarkerPanel2;
 import util.EditorUtil;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,8 +17,16 @@ import java.util.List;
 public class MarkToTarget extends VersionTwoCustomAction {
     @Override
     public void initiateActionAtMarker(Marker2 marker, Editor editor, MarkerPanel2 markerPanel) {
-        findOffsetsAndPerformAction(EditorUtil::performMark,marker,editor);
-        exitAction(editor);
+        markerPanel.removeMarkers(Collections.singletonList(marker));
+        util.EditorUtil.performMarkRange(marker.getStartOffset(), marker.getStartOffset() + 1, editor);
+        //wait for either request to undo (escape) or implicit confirmation (anything else)
+        suspendedKeylisteners = editor.getContentComponent().getKeyListeners();
+        Arrays.stream(suspendedKeylisteners)
+                .forEach(editor.getContentComponent()::removeKeyListener);
+        exitOnEscape = false;
+        editor.getContentComponent().addKeyListener(
+                new TwoOffsetOneOverlayAcceptListener(this, editor, marker, EditorUtil::performMark));
+        decommissionPopup(popup);
     }
 
     @Override

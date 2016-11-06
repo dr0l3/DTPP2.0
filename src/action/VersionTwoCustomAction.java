@@ -33,15 +33,23 @@ public abstract class VersionTwoCustomAction extends AnAction {
     protected boolean isSelecting;
     protected boolean isSecondOverlay;
     protected int offsetFromFirstOverlay;
+    protected boolean exitOnEscape;
+    protected KeyListener[] suspendedKeylisteners;
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
-        //setup
         Project project = anActionEvent.getData(CommonDataKeys.PROJECT);
         Editor editor = anActionEvent.getData(CommonDataKeys.EDITOR);
         if (editor == null || project == null) {
             return;
         }
+        onActionPerformed(editor, "");
+    }
+
+    public void onActionPerformed(Editor editor, String initialString){
+        //setup
+        exitOnEscape = true;
+        Project project = editor.getProject();
         contentComponent = editor.getContentComponent();
         markerPanel = new MarkerPanel2(editor, this, editor.getCaretModel().getCurrentCaret().getOffset());
         contentComponent.add(markerPanel);
@@ -66,12 +74,15 @@ public abstract class VersionTwoCustomAction extends AnAction {
         decommissionPopup(popup);
         popup = setupPopupAndBindActionListeners(searchTextField, popupListener, panel);
         calculatePositionAndShowPopup(popup, contentComponent);
+        searchTextField.setText(initialString);
         searchTextField.requestFocus();
     }
 
-    private void decommissionPopup(JBPopup popup) {
+    protected void decommissionPopup(JBPopup popup) {
         if (popup != null) {
-            popup.removeListener(popupListener);
+            if(popupListener != null) {
+                popup.removeListener(popupListener);
+            }
             popup.cancel();
         }
     }
@@ -104,10 +115,19 @@ public abstract class VersionTwoCustomAction extends AnAction {
     }
 
     public void exitAction(Editor editor) {
+        if(!exitOnEscape){
+            return;
+        }
+        if(isSecondOverlay && !isSelecting){
+            onActionPerformed(editor, "");
+            editor.getMarkupModel().removeAllHighlighters();
+            return;
+        }
         editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
+        editor.getMarkupModel().removeAllHighlighters();
         contentComponent.remove(markerPanel);
         contentComponent.repaint();
-        if (!popup.isDisposed()) {
+        if (popup != null && !popup.isDisposed()) {
             popup.cancel();
         }
         this.popup = null;
@@ -117,7 +137,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
         return isSelecting;
     }
 
-    protected void setupSecondOverLay(Marker2 marker, MarkerPanel2 markerPanel, Editor editor) {
+    public void setupSecondOverLay(Marker2 marker, MarkerPanel2 markerPanel, Editor editor) {
         markerPanel.setSelectCharCount(0);
         isSecondOverlay = true;
         offsetFromFirstOverlay = marker.getStartOffset();
@@ -167,5 +187,21 @@ public abstract class VersionTwoCustomAction extends AnAction {
 
     public void setSelecting(boolean selecting) {
         isSelecting = selecting;
+    }
+
+    public boolean isSecondOverlay() {
+        return isSecondOverlay;
+    }
+
+    public void setSecondOverlay(boolean secondOverlay) {
+        isSecondOverlay = secondOverlay;
+    }
+
+    public void setExitOnEscape(boolean exitOnEscape) {
+        this.exitOnEscape = exitOnEscape;
+    }
+
+    public KeyListener[] getSuspendedKeylisteners() {
+        return suspendedKeylisteners;
     }
 }

@@ -2,8 +2,6 @@ package marker;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
-import com.intellij.openapi.editor.VisualPosition;
-import com.intellij.openapi.util.TextRange;
 
 import java.awt.*;
 
@@ -16,6 +14,7 @@ public class Marker2 {
     private String markerText;
     private String replacementText;
     private boolean primaryMarker;
+    private boolean selectionMaker;
 
     public Marker2(int startOffset, int endOffset, String markerText, String replacementText) {
         this.startOffset = startOffset;
@@ -23,6 +22,24 @@ public class Marker2 {
         this.markerText = markerText;
         this.replacementText = replacementText;
         this.primaryMarker = true;
+        this.selectionMaker = false;
+    }
+
+    public Marker2(Marker2 marker2){
+        this.startOffset = marker2.getStartOffset();
+        this.endOffset = marker2.getEndOffset();
+        this.markerText = marker2.getMarkerText();
+        this.replacementText = marker2.getReplacementText();
+        this.primaryMarker = marker2.isPrimaryMarker();
+        this.selectionMaker = marker2.isSelectionMaker();
+    }
+
+    public boolean isSelectionMaker() {
+        return selectionMaker;
+    }
+
+    public void setSelectionMaker(boolean selectionMaker) {
+        this.selectionMaker = selectionMaker;
     }
 
     public int getStartOffset() {
