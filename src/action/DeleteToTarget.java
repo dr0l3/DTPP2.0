@@ -4,6 +4,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import marker.Marker2;
+import marker.MarkerPanel2;
 import util.EditorUtil;
 
 import java.util.List;
@@ -13,12 +14,12 @@ import java.util.List;
  */
 public class DeleteToTarget extends VersionTwoCustomAction {
     @Override
-    public void initiateActionAtMarker(Marker2 marker) {
-        findOffsetsAndPerformAction(EditorUtil::performDelete,marker);
-        exitAction();
+    public void initiateActionAtMarker(Marker2 marker, Editor editor, MarkerPanel2 markerPanel) {
+        findOffsetsAndPerformAction(EditorUtil::performDelete,marker,editor);
+        exitAction(editor);
     }
 
     @Override
-    public void initiateActionAtMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers, Editor editor, MarkerPanel2 markerPanel) {
     }
 }

@@ -34,7 +34,7 @@ public class MarkerPanel2 extends JComponent{
     private Font fontIneditor;
     private VersionTwoCustomAction callingAction;
     private int contextPoint;
-    private int selectCharCount;
+    private int selectCharCount; //used to figure out if we should widen markernet
     private boolean searchingInEntireDocument;
 
     public MarkerPanel2(Editor editor, VersionTwoCustomAction callingAction, int contextPoint) {
@@ -231,7 +231,7 @@ public class MarkerPanel2 extends JComponent{
                 .sorted(new MarkerComparator(this.contextPoint))
                 .findFirst();
         if(goTomarker.isPresent()) {
-            callingAction.initiateActionAtMarker(goTomarker.get());
+            callingAction.initiateActionAtMarker(goTomarker.get(), editor, this);
         }
     }
 
@@ -247,7 +247,7 @@ public class MarkerPanel2 extends JComponent{
                 .filter(marker2 -> marker2.getReplacementText().toLowerCase().equals(selectedChar))
                 .findFirst();
         if(marker.isPresent()) {
-            callingAction.initiateActionAtMarker(marker.get());
+            callingAction.initiateActionAtMarker(marker.get(), editor, this);
         }
     }
 
@@ -281,7 +281,7 @@ public class MarkerPanel2 extends JComponent{
     }
 
     public void handleSelectAll() {
-        callingAction.initiateActionAtMarkers(markerCollection);
+        callingAction.initiateActionAtMarkers(markerCollection,editor, this);
     }
 
     public int getContextPoint() {

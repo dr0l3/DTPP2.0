@@ -17,8 +17,10 @@ package util;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.ui.JBColor;
 
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -124,6 +126,14 @@ public class EditorUtil {
 
     public static void performInsertCaret(int offset, Editor editor){
         editor.getCaretModel().addCaret(editor.offsetToVisualPosition(offset));
+    }
+
+    public static void performMarkSingleCharacter(int offset, Editor editor){
+        MarkupModel markupModel = editor.getMarkupModel();
+        TextAttributes attributes = new TextAttributes();
+        attributes.setEffectType(EffectType.SEARCH_MATCH);
+        attributes.setBackgroundColor(JBColor.CYAN);
+        markupModel.addRangeHighlighter(offset, offset+1, HighlighterLayer.SELECTION, attributes, HighlighterTargetArea.EXACT_RANGE);
     }
 
     public static void performInsertCarets(List<Integer> offsets, Editor editor){

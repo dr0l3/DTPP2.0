@@ -13,15 +13,12 @@ import keylistener.SearchKeyListener;
 import marker.Marker2;
 import marker.MarkerPanel2;
 import popup.SearchPopupListener;
+import util.ListenerUtil;
 import util.OneOffsetEditorAction;
 import util.TwoOffsetEditorAction;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.List;
 
@@ -29,17 +26,8 @@ import java.util.List;
  * Created by runed on 15-10-2016.
  */
 public abstract class VersionTwoCustomAction extends AnAction {
-    private static final String SET_SELECTING = "setSelecting";
-    private static final String SEARCH_UP = "searchUp";
-    private static final String SEARCH_DOWN = "searchDown";
-    private static final String PERFORM_ACTION_AT_FIRST_UP = "performActionAtFirstUp";
-    private static final String PERFORM_ACTION_AT_FIRST_DOWN = "performActionAtFirstDown";
-    private static final String PERFORM_ACTION_AT_ALL = "performActionAtAll";
     protected JComponent contentComponent;
-    protected Editor editor;
-    protected KeyListener searchListener;
     protected MarkerPanel2 markerPanel;
-    protected JTextField searchTextField;
     protected SearchPopupListener popupListener;
     protected JBPopup popup;
     protected boolean isSelecting;
@@ -50,7 +38,7 @@ public abstract class VersionTwoCustomAction extends AnAction {
     public void actionPerformed(AnActionEvent anActionEvent) {
         //setup
         Project project = anActionEvent.getData(CommonDataKeys.PROJECT);
-        editor = anActionEvent.getData(CommonDataKeys.EDITOR);
+        Editor editor = anActionEvent.getData(CommonDataKeys.EDITOR);
         if (editor == null || project == null) {
             return;
         }
@@ -59,9 +47,20 @@ public abstract class VersionTwoCustomAction extends AnAction {
         contentComponent.add(markerPanel);
         isSelecting = false;
         isSecondOverlay = false;
-        searchListener = new SearchKeyListener(this);
-        searchTextField = setupSearchTextField(searchListener);
-        popupListener = new SearchPopupListener(this);
+        JTextField searchTextField = setupSearchTextField();
+        //listens for acitons when the textfield is locked and we are selecting
+        searchTextField.addKeyListener(new SearchKeyListener(this, markerPanel));
+
+        //listens for actions when the textfield is not locked and we are not selecting
+        ListenerUtil.getDocumentListeners(this, markerPanel)
+                .forEach(searchTextField.getDocument()::addDocumentListener);
+        //listens for special actions like enter, scroll etc.
+        ListenerUtil.getKeybindings(this,markerPanel,searchTextField)
+                .forEach(binding ->{
+                    searchTextField.getInputMap().put(binding.getKeyStroke(),binding.getStringIntermediary());
+                    searchTextField.getActionMap().put(binding.getStringIntermediary(), binding.getAction());
+                });
+        popupListener = new SearchPopupListener(this, editor);
         JPanel panel = new JPanel(new BorderLayout());
 
         decommissionPopup(popup);
@@ -96,116 +95,16 @@ public abstract class VersionTwoCustomAction extends AnAction {
         popup.show(popupLocation);
     }
 
-    private JTextField setupSearchTextField(KeyListener searchListener) {
+    private JTextField setupSearchTextField() {
         JTextField textField = new JTextField();
-        textField.addKeyListener(searchListener);
         textField.setText("");
         textField.setColumns(10);
-        textField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                if (isSelecting()) {
-                    return;
-                }
-                handleSearch();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                if (isSelecting()) {
-                    return;
-                }
-                handleSearch();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                if (isSelecting()) {
-                    return;
-                }
-                handleSearch();
-            }
-        });
-
-        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SET_SELECTING);
-        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.ALT_DOWN_MASK), SEARCH_UP);
-        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_K, KeyEvent.ALT_DOWN_MASK), SEARCH_DOWN);
-        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK), PERFORM_ACTION_AT_FIRST_UP);
-        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK), PERFORM_ACTION_AT_FIRST_DOWN);
-        textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK), PERFORM_ACTION_AT_ALL);
-
-        textField.getActionMap().put(SEARCH_UP, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                markerPanel.searchFurther(true);
-                System.out.println("Searching up");
-            }
-        });
-
-        textField.getActionMap().put(SEARCH_DOWN, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                markerPanel.searchFurther(false);
-                System.out.println("Searching down");
-            }
-        });
-
-        textField.getActionMap().put(SET_SELECTING, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                isSelecting = true;
-                searchTextField.setEditable(false);
-                System.out.println("now selecting");
-            }
-        });
-
-        textField.getActionMap().put(PERFORM_ACTION_AT_FIRST_UP, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("going to first occurence up");
-                handleSelectFirstOccurence(true);
-            }
-        });
-
-        textField.getActionMap().put(PERFORM_ACTION_AT_FIRST_DOWN, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("going to first occurence down");
-                handleSelectFirstOccurence(false);
-            }
-        });
-
-        textField.getActionMap().put(PERFORM_ACTION_AT_ALL, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("doing all the things");
-                handleSelectAll();
-            }
-        });
 
         return textField;
     }
 
-    public void handleSelectAll() {
-        markerPanel.handleSelectAll();
-    }
-
-    public void handleSelectFirstOccurence(boolean upwards) {
-        markerPanel.handleSelectFirstOccurence(upwards);
-    }
-
-    public void handleSearch() {
-        markerPanel.updateMarkers(searchTextField.getText());
-        contentComponent.repaint();
-    }
-
-    public void handleSelect(String selectedChar) {
-        markerPanel.handleSelect(selectedChar);
-    }
-
-    public void exitAction() {
+    public void exitAction(Editor editor) {
         editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
-        markerPanel.updateMarkers("");
         contentComponent.remove(markerPanel);
         contentComponent.repaint();
         if (!popup.isDisposed()) {
@@ -218,28 +117,35 @@ public abstract class VersionTwoCustomAction extends AnAction {
         return isSelecting;
     }
 
-    protected void setupSecondOverLay(Marker2 marker) {
+    protected void setupSecondOverLay(Marker2 marker, MarkerPanel2 markerPanel, Editor editor) {
         markerPanel.setSelectCharCount(0);
         isSecondOverlay = true;
         offsetFromFirstOverlay = marker.getStartOffset();
         isSelecting = false;
         decommissionPopup(popup);
-        searchListener = new SearchKeyListener(this);
-        searchTextField = setupSearchTextField(searchListener);
-        popupListener = new SearchPopupListener(this);
+        JTextField searchTextField = setupSearchTextField();
+        searchTextField.addKeyListener(new SearchKeyListener(this, markerPanel));
+        ListenerUtil.getDocumentListeners(this, markerPanel)
+                .forEach(searchTextField.getDocument()::addDocumentListener);
+        ListenerUtil.getKeybindings(this,markerPanel,searchTextField)
+                .forEach(binding ->{
+                    searchTextField.getInputMap().put(binding.getKeyStroke(),binding.getStringIntermediary());
+                    searchTextField.getActionMap().put(binding.getStringIntermediary(), binding.getAction());
+                });
+        SearchPopupListener popupListener = new SearchPopupListener(this, editor);
         JPanel panel = new JPanel(new BorderLayout());
 
         popup = setupPopupAndBindActionListeners(searchTextField, popupListener, panel);
         calculatePositionAndShowPopup(popup, contentComponent);
         searchTextField.requestFocus();
-        handleSearch();
+        markerPanel.updateMarkers("");
     }
 
-    public abstract void initiateActionAtMarker(Marker2 marker);
+    public abstract void initiateActionAtMarker(Marker2 marker, Editor editor, MarkerPanel2 markerPanel);
 
-    public abstract void initiateActionAtMarkers(List<Marker2> markers);
+    public abstract void initiateActionAtMarkers(List<Marker2> markers, Editor editor, MarkerPanel2 markerPanel);
 
-    public void findOffsetsAndPerformAction(TwoOffsetEditorAction toBePerformed, Marker2 marker) {
+    public void findOffsetsAndPerformAction(TwoOffsetEditorAction toBePerformed, Marker2 marker, Editor editor) {
         int offset = marker.getStartOffset();
         int currentOffset;
         if (isSecondOverlay) {
@@ -254,9 +160,12 @@ public abstract class VersionTwoCustomAction extends AnAction {
         }
     }
 
-    public void findSingleOffsetAndPerformAction(OneOffsetEditorAction toBePerformed, Marker2 marker) {
+    public void findSingleOffsetAndPerformAction(OneOffsetEditorAction toBePerformed, Marker2 marker, Editor editor) {
         int offset = marker.getStartOffset();
         toBePerformed.performAction(offset, editor);
     }
 
+    public void setSelecting(boolean selecting) {
+        isSelecting = selecting;
+    }
 }

@@ -1,6 +1,7 @@
 package keylistener;
 
 import action.VersionTwoCustomAction;
+import marker.MarkerPanel2;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -10,25 +11,20 @@ import java.awt.event.KeyListener;
  */
 public class SearchKeyListener implements KeyListener {
     private VersionTwoCustomAction callingAction;
+    private MarkerPanel2 markerPanel;
 
-    public SearchKeyListener(VersionTwoCustomAction callingAction) {
+    public SearchKeyListener(VersionTwoCustomAction callingAction, MarkerPanel2 markerPanel2) {
         this.callingAction = callingAction;
+        this.markerPanel = markerPanel2;
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-        if(callingAction.isSelecting()){
-            /*if((e.getKeyChar() == '\n')){
-                return;
-            }*/
-            if(e.getKeyChar() == KeyEvent.VK_F2 || e.getKeyChar() == KeyEvent.VK_F3){
-                System.out.println("up or down");
-                return;
-            }
-            System.out.println("Handling select");
-            callingAction.handleSelect(String.valueOf(e.getKeyChar()));
+        if(!callingAction.isSelecting()){
             return;
         }
+        System.out.println("Handling select");
+        markerPanel.handleSelect(String.valueOf(e.getKeyChar()));
     }
 
     @Override

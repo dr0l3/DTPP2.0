@@ -2,7 +2,9 @@ package action;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
 import marker.Marker2;
+import marker.MarkerPanel2;
 import util.EditorUtil;
 
 import java.util.List;
@@ -12,16 +14,16 @@ import java.util.List;
  */
 public class CutBetweenTargets extends VersionTwoCustomAction {
     @Override
-    public void initiateActionAtMarker(Marker2 marker) {
+    public void initiateActionAtMarker(Marker2 marker, Editor editor, MarkerPanel2 markerPanel) {
         if(isSecondOverlay){
-            findOffsetsAndPerformAction(EditorUtil::performCut, marker);
-            exitAction();
+            findOffsetsAndPerformAction(EditorUtil::performCut, marker,editor);
+            exitAction(editor);
             return;
         }
-        setupSecondOverLay(marker);
+        setupSecondOverLay(marker, markerPanel, editor);
     }
 
     @Override
-    public void initiateActionAtMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers, Editor editor, MarkerPanel2 markerPanel) {
     }
 }

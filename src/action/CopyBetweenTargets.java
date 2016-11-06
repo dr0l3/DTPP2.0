@@ -1,6 +1,8 @@
 package action;
 
+import com.intellij.openapi.editor.Editor;
 import marker.Marker2;
+import marker.MarkerPanel2;
 import util.EditorUtil;
 
 import java.util.List;
@@ -10,16 +12,16 @@ import java.util.List;
  */
 public class CopyBetweenTargets extends VersionTwoCustomAction {
     @Override
-    public void initiateActionAtMarker(Marker2 marker) {
+    public void initiateActionAtMarker(Marker2 marker, Editor editor, MarkerPanel2 markerPanel) {
         if(isSecondOverlay){
-            findOffsetsAndPerformAction(EditorUtil::performCopy, marker);
-            exitAction();
+            findOffsetsAndPerformAction(EditorUtil::performCopy, marker,editor);
+            exitAction(editor);
             return;
         }
-        setupSecondOverLay(marker);
+        setupSecondOverLay(marker, markerPanel, editor);
     }
 
     @Override
-    public void initiateActionAtMarkers(List<Marker2> markers) {
+    public void initiateActionAtMarkers(List<Marker2> markers, Editor editor, MarkerPanel2 markerPanel) {
     }
 }
