@@ -24,7 +24,7 @@ import static util.EditorUtil.getVisibleTextRange;
  * Created by runed on 15-10-2016.
  */
 public class MarkerPanel2 extends JComponent{
-    private static final String MARKER_SET = "ASKDLJOWIEXUHCVNMBZRFTGYPÅØÆ";
+    private static final String MARKER_SET = "AZWSXEDCFVTGBYHNUJMIKOLPÆÅØ";
     private Editor editor;
     private ArrayList<Marker2> markerCollection;
     private String searchString;
